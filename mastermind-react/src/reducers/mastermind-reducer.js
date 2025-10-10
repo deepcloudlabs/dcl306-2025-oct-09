@@ -1,68 +1,113 @@
 import create_secret, {evaluateMove} from "../utils/game-utils";
 
-function play(newState, action) {
-    newState.tries++;
-    if (newState.secret === newState.guess) {
-        newState.level++;
-        if (newState.level > 10) {
-            newState.status = "PLAYER_WINS";
-            return;
-        }
-        newState.secret = create_secret(newState.level);
-        newState.moves = [];
-        newState.tries = 0;
-        //Reward: max tries: +2, time constraint: +40, lives: +1
-        newState.constraints.max_tries += 2;
-        newState.constraints.timeout += 40;
-        newState.counter = newState.constraints.timeout;
-        newState.lives += 1;
-    } else {
-        if (newState.tries > newState.constraints.max_tries) {
-            newState.lives--;
-            if (newState.lives === 0) {
-                newState.status = "PLAYER_LOSES";
-                return;
-            }
-            newState.secret = create_secret(newState.level);
-            newState.moves = [];
-            newState.tries = 0;
-        } else {
-            newState.moves.push(evaluateMove(newState.guess, newState.secret));
-        }
+export const ActionTypes = Object.freeze({
+    PLAY: "play",
+    GUESS_CHANGED: "guess_changed",
+    TIMER_TICKED: "timer_ticked",
+});
+
+const MAX_LEVEL = 10;
+
+const REWARD = Object.freeze({
+    incrementMaxTriesBy: 2,
+    incrementTimeoutBy: 40,
+    incrementLivesBy: 1,
+});
+
+/** Helpers return a brand-new state (no mutation) */
+function onWin(state) {
+    const nextLevel = state.level + 1;
+    if (nextLevel > MAX_LEVEL) {
+        return {...state, status: "PLAYER_WINS"};
     }
+
+    // Level up + rewards
+    const nextConstraints = {
+        ...state.constraints,
+        max_tries: state.constraints.max_tries + REWARD.incrementMaxTriesBy,
+        timeout: state.constraints.timeout + REWARD.incrementTimeoutBy,
+    };
+
+    return {
+        ...state,
+        level: nextLevel,
+        secret: create_secret(nextLevel),
+        moves: [],
+        tries: 0,
+        lives: state.lives + REWARD.incrementLivesBy,
+        constraints: nextConstraints,
+        counter: nextConstraints.timeout,
+    };
 }
 
-function countDown(newState, action) {
-    newState.counter--;
-    if (newState.counter <= 0) {
-        newState.lives--;
-        if (newState.lives <= 0) {
-            newState.status = "PLAYER_LOSES";
-            return;
-        }
-        newState.secret = create_secret(newState.level);
-        newState.moves = [];
-        newState.tries = 0;
-        newState.counter = newState.constraints.timeout;
+function onExceedTries(state) {
+    const nextLives = state.lives - 1;
+    if (nextLives === 0) {
+        return {...state, lives: 0, status: "PLAYER_LOSES"};
     }
+
+    return {
+        ...state,
+        lives: nextLives,
+        secret: create_secret(state.level),
+        moves: [],
+        tries: 0,
+    };
+}
+
+function onValidTry(state) {
+    const move = evaluateMove(state.guess, state.secret);
+    console.log("onValidTry");
+    return {
+        ...state,
+        moves: [...state.moves, move],
+    };
+}
+
+function play(state) {
+    const tries = state.tries + 1;
+    if (state.secret === state.guess) {
+        return onWin({...state, tries});
+    }
+
+    if (tries > state.constraints.max_tries) {
+        return onExceedTries({...state, tries});
+    }
+
+    return onValidTry({...state, tries});
+}
+
+function countDown(state) {
+    const counter = state.counter - 1;
+
+    if (counter > 0) {
+        return {...state, counter};
+    }
+
+    const nextLives = state.lives - 1;
+    if (nextLives <= 0) {
+        return {...state, lives: 0, status: "PLAYER_LOSES"};
+    }
+
+    return {
+        ...state,
+        lives: nextLives,
+        secret: create_secret(state.level),
+        moves: [],
+        tries: 0,
+        counter: state.constraints.timeout,
+    };
 }
 
 export default function MastermindReducer(state, action) {
-    const newState = {...state};
-    newState.constraints = {...state.constraints};
-    newState.moves = [...state.moves];
     switch (action.type) {
         case "play":
-            play(newState, action);
-            break;
+            return play(state, action);
         case "guess_changed":
-            newState.guess = Number(action.value);
-            break;
+            return {...state, guess: Number(action.value)};
         case "timer_ticked":
-            countDown(newState, action);
-            break;
+            return countDown(state);
         default:
-            throw new Error("Unknow action type");
+            throw new Error(`Unknown action type: ${action.type}`);
     }
-    return newState;
 }

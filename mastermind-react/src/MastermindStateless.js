@@ -7,24 +7,25 @@ import Table from "./components/common/table";
 import React, {useContext, useEffect} from "react";
 import {MastermindContext} from "./providers/mastermind-provider";
 import {useNavigate} from "react-router";
+import {ActionTypes} from "./reducers/mastermind-reducer";
 
 export default function MasterMindStateless() {
     const {mastermind, dispatchMastermind} = useContext(MastermindContext);
     const navigate = useNavigate();
     const handleChange = e => {
-        dispatchMastermind({type: "guess_changed", value: e.target.value});
+        dispatchMastermind({type: ActionTypes.GUESS_CHANGED, value: e.target.value});
     };
     const play = e => {
-        dispatchMastermind({type: "play", value: e.target.label});
+        dispatchMastermind({type: ActionTypes.PLAY, value: e.target.label});
     };
     useEffect(() => {
         const timer_id = setInterval(() => {
-            dispatchMastermind({type: "timer_ticked"});
+            dispatchMastermind({type: ActionTypes.TIMER_TICKED});
         }, 1_000);
         return () => {
             clearInterval(timer_id);
         }
-    }, []);
+    });
     useEffect(() => {
         switch (mastermind.status) {
             case "PLAYER_WINS":
@@ -35,7 +36,7 @@ export default function MasterMindStateless() {
                 break;
             default:
         }
-    },[mastermind]);
+    }, [mastermind, navigate]);
     return (
         <Container>
             <p></p>
