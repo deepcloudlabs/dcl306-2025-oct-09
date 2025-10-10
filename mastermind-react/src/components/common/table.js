@@ -8,7 +8,7 @@ export default function Table({column_names,items,fields}) {
           <tbody>
           {
               items.map( (item,index) =>
-                  (<TableRow key={index} fields={fields} value={item}></TableRow>)
+                  (<TableRow rowkey={index} fields={fields} value={item}></TableRow>)
               )
           }
           </tbody>

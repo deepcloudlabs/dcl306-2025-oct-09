@@ -6,12 +6,13 @@ import Button from "./components/common/button";
 import Badge from "./components/common/badge";
 import Move from "./model/move";
 import Table from "./components/common/table";
+import create_secret from "./utils/game-utils";
 
 // MVC
 const initial_state = {
     game: {
         level: 3,
-        secret: 549,
+        secret: create_secret(3),
         moves: [],
         guess: 123,
         lives: 3,
@@ -80,14 +81,31 @@ class Mastermind extends React.PureComponent {
     play = e => {
         let newState = {...this.state};
         newState.game = {...this.state.game};
+        newState.constraints = {...this.state.constraints};
         newState.game.moves = [...this.state.game.moves];
         newState.game.tries++;
         if (newState.game.secret === this.state.game.guess) {
-            //TODO: move to the next game level
+            newState.game.level++;
+            if (newState.game.level > 10) {
+                //TODO: player wins!
+            }
+            newState.game.secret = create_secret(newState.game.level);
+            newState.game.moves = [];
+            newState.game.tries = 0;
+            //Reward: max tries: +2, time constraint: +40, lives: +1
+            newState.constraints.max_tries += 2;
+            newState.constraints.timeout += 40;
+            newState.counter = newState.constraints.timeout;
+            newState.game.lives += 1;
         } else {
             if (newState.game.tries > this.state.constraints.max_tries) {
+                if(newState.game.lives === 0){
+                    //TODO: player loses!
+                }
                 newState.game.lives--;
-                //TODO: re-play if there is player life!
+                newState.game.secret = create_secret(newState.game.level);
+                newState.game.moves = [];
+                newState.game.tries = 0;
             } else {
                 newState.game.moves.push(this.evaluateMove(newState.game.guess, newState.game.secret));
             }

@@ -1,11 +1,11 @@
 import TableData from "./table-data";
 
-export default function TableRow({key,value,fields}) {
+export default function TableRow({rowkey,value,fields}) {
     return (
-        <tr key={key}>
+        <tr key={rowkey}>
             {
                 fields.map( (field,field_index) =>
-                    (<TableData key={field_index} value={value[field]} />)
+                    (<TableData cellkey={field_index} value={value[field]} />)
                 )
             }
         </tr>

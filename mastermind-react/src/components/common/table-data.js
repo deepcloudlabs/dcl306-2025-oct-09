@@ -1,6 +1,5 @@
-export default function TableData({key,value}) {
-    console.log(value)
+export default function TableData({cellkey,value}) {
     return (
-        <td key={key}>{value}</td>
+        <td key={cellkey}>{value}</td>
     );
 }
