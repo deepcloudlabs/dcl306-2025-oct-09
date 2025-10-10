@@ -1,16 +1,30 @@
 import React from "react";
+import Container from "./components/common/container";
+import Card from "./components/common/card";
+import InputText from "./components/common/input-text";
+import Button from "./components/common/button";
+import Badge from "./components/common/badge";
 
 // MVC
 const initial_state = {
-    level: 3,
-    secret: 549,
-    moves: [],
-    guess: 123,
-    lives: 3,
-    tries: 0,
-    max_tries: 10,
-    timeout: 100,
-    count_down_counter: 100
+    game: {
+        level: 3,
+        secret: 549,
+        moves: [],
+        guess: 123,
+        lives: 3,
+        tries: 0,
+    },
+    counter: 100,
+    constrains: {
+        max_tries: 10,
+        timeout: 100
+    },
+    statistics: {
+        wins: 0,
+        loses: 0,
+        average_moves: 0
+    }
 };
 
 class Mastermind extends React.PureComponent {
@@ -21,19 +35,11 @@ class Mastermind extends React.PureComponent {
     }
 
     componentDidMount() {
-/*
         this.timer_id = setInterval(() => {
-            let newState = {...this.state};
-            newState.count_down_counter--;
-            this.setState(newState,() => {
-                console.log(`Model: ${this.state.count_down_counter}, ${newState.count_down_counter} `);
+            this.setState((prevState) => {
+                return {counter: prevState.counter - 1};
             });
         }, 1_000);
-        */
-        this.timer_id = setInterval(() => {
-            let count_down_counter = this.state.count_down_counter -1;
-            this.setState({count_down_counter});
-        },1_000);
     }
 
     componentWillUnmount() {
@@ -41,33 +47,39 @@ class Mastermind extends React.PureComponent {
     }
 
     handleChange = (event) => {
-        this.setState({guess: Number(event.target.value)});
+        let game = {...this.state.game};
+        game.guess = Number(event.target.value);
+        // asynchronous function
+        this.setState({game}, () => {
+            console.log("Game state changed...");
+        });
     }
 
-    // Model -- bind (this.setState()) --> View
+    play = e => {
+        let newState = {...this.state};
+        newState.game = {...this.state.game};
+        newState.game.tries++;
+        this.setState(newState);
+    }
+
+    // Model/State -- bind (this.setState()) --> View
     // Model <-- bind -- View <-- User
     render() {
         return (
-            <div className="container">
-                <div className="card">
-                    <div className="card-header">
-                        <h4><span className="card-title">*MasterMind*</span></h4>
-                    </div>
-                    <div className="card-body">
-                        <h4>Timeout: <span className="card-text">{this.state.count_down_counter}</span></h4>
-                        <div className="form-text">
-                            <label className={"form-label"}
-                                   htmlFor="guess">Guess:</label>
-                            <input className={"form-control"}
-                                   type="text"
-                                   id="guess"
-                                   onChange={this.handleChange}
-                                   value={this.state.guess}
-                                   placeholder="Enter Guess"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Container>
+                <Card title={"Mastermind Game Console"}>
+                    <Badge label="Game Level" color={"bg-success"} value={this.state.game.level}/>
+                    <Badge label="Lives" color={"bg-danger"} value={this.state.game.lives}/>
+                    <Badge isVisible={this.state.game.tries > 0} label="Tries" color={"bg-info"} value={this.state.game.tries}/>
+                    <Badge label="Timeout" color={"bg-warning"} value={this.state.counter}/>
+                    <InputText label={"Guess"}
+                               value={this.state.game.guess}
+                               form_id={"guess"}
+                               placeholder={"Enter your guess"}
+                               handleChange={this.handleChange}/>
+                    <Button label={"Play"} color={"btn-success"} click={this.play}></Button>
+                </Card>
+            </Container>
         );
     }
 }
