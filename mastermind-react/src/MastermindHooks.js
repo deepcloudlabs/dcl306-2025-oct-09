@@ -105,8 +105,8 @@ export default function MastermindHooks() {
         /*
         setTries(prevTries => prevTries + 1);
         setTries(prevTries => prevTries + 1);
-        */
         console.log(tries); // still holds the previous value!
+        */
         if (secret === guess) {
             setLevel(prevLevel => prevLevel + 1);
             if (level > 3) {
