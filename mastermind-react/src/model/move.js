@@ -1,19 +1,24 @@
 export default class Move {
-    constructor({guess,secret,perfect_match,partial_match}) {
+    constructor({guess, secret, perfect_match, partial_match}) {
         this.guess = guess;
         this.secret = secret;
         this.perfect_match = perfect_match;
         this.partial_match = partial_match;
-        this.message = "";
-        if (partial_match === 0 && perfect_match === 0) {
-            this.message = "No Match";
+        this.message = Move.generateMessage(perfect_match, partial_match);
+    }
+
+    static generateMessage(perfect, partial) {
+        let message = "";
+        if (partial === 0 && perfect === 0) {
+            message = "No Match";
         } else {
-            if (partial_match > 0) {
-                this.message = `-${partial_match}`;
+            if (partial > 0) {
+                message = `-${partial}`;
             }
-            if (perfect_match > 0) {
-                this.message = `${this.message}+${perfect_match}`;
+            if (perfect > 0) {
+                message = `${message}+${perfect}`;
             }
         }
+        return message;
     }
 }
