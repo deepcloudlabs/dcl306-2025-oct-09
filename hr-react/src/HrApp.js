@@ -15,7 +15,8 @@ function HrApp() {
         <>
             <p></p>
             <Container>
-                <Card title={"Employee"}></Card>
+                <Card title={"Employee"}>
+
                 <InputText value={employee.identityNo}
                            label={"Identity No"}
                            form_id={"identityNo"}
@@ -39,6 +40,7 @@ function HrApp() {
                 <SelectBox value={employee.department}
                            options={departments}
                            change={handleChange}/>
+                </Card>
                 <p></p>
                 <Card title={"Employees"}></Card>
             </Container>

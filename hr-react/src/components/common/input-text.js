@@ -2,7 +2,7 @@ import React from "react";
 
 export default function InputText({label,form_id,handleChange,value,placeholder}) {
     return (
-        <div className="form-text">
+        <div className="mb3">
             <label className={"form-label"}
                    htmlFor={form_id}>{label}:</label>
             <input className={"form-control"}

@@ -2,11 +2,11 @@ import React from "react";
 
 export default function SelectBox({value,change,options}) {
     return(
-        <div className="form-text">
+        <div className="mb-3">
             <label className={"form-label"}
                    htmlFor={"department"}>Department:</label>
             <select id="department"
-                    className={"form-select"}
+                    className={"form-control form-select"}
                     value={value}
                     onChange={change}>
                 {
