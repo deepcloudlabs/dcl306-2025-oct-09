@@ -11,6 +11,7 @@ const initial_state = {
     lives: 3,
     tries: 0,
     counter: 100,
+    status: "PLAYER_PLAYS",
     constraints: {
         max_tries: 10,
         timeout: 100
