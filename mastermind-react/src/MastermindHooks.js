@@ -9,20 +9,72 @@ import create_secret, {evaluateMove} from "./utils/game-utils";
 import {useNavigate} from "react-router";
 
 const initial_secret = create_secret(3);
+
+function get_state_from_local_storage(item_name, state_name, defaul_value) {
+    let state = localStorage.getItem(item_name)
+    if (state) {
+        state = JSON.parse(state);
+        return state[state_name];
+    }
+    return defaul_value;
+}
+
 export default function MastermindHooks() {
-    const [secret, setSecret] = useState(initial_secret);
-    const [level, setLevel] = useState(3);
-    const [lives, setLives] = useState(3);
-    const [tries, setTries] = useState(0);
-    const [counter, setCounter] = useState(100);
-    const [guess, setGuess] = useState(123);
-    const [moves, setMoves] = useState([]);
-    const [constraints, setConstraints] = useState({
-        max_tries: 10,
-        timeout: 100
+    const [secret, setSecret] = useState(()=>{
+        return get_state_from_local_storage("mastermind", "secret", initial_secret);
+    });
+    const [level, setLevel] = useState(()=>{
+        return get_state_from_local_storage("mastermind", "level", 3);
+    });
+    const [lives, setLives] = useState(()=>{
+        return get_state_from_local_storage("mastermind", "lives", 3);
+    });
+    const [tries, setTries] = useState(() => {
+        return get_state_from_local_storage("mastermind", "tries", 0);
+    });
+    const [counter, setCounter] = useState(() => {
+        return get_state_from_local_storage("mastermind", "counter", 100);
+    });
+    const [guess, setGuess] = useState(() => {
+        return get_state_from_local_storage("mastermind", "guess", 123);
+    });
+    const [moves, setMoves] = useState(() => {
+        return get_state_from_local_storage("mastermind", "moves", []);
+    });
+    const [constraints, setConstraints] = useState(() => {
+        return get_state_from_local_storage("mastermind", "constraints", {
+            max_tries: 10,
+            timeout: 100
+        });
     });
 
     const navigate = useNavigate();
+    /*
+        const setters = {
+            secret: setSecret,
+            level: setLevel,
+            lives: setLives,
+            tries: setTries,
+            counter: setCounter,
+            guess: setGuess,
+            moves: setMoves,
+            constraints: setConstraints
+        };
+        useEffect(() => {
+            let state = localStorage.getItem("mastermind");
+            if(state) {
+                state = JSON.parse(state);
+                for (let field in state){
+                    setters[field]?.(state[field]) ;
+                }
+            }
+        }, []);
+     */
+    useEffect(() => {
+        localStorage.setItem("mastermind", JSON.stringify({
+            secret, level, lives, tries, counter, guess, moves, constraints
+        }));
+    }, [tries]);
 
     useEffect(() => {
         const timer_id = setInterval(() => {
