@@ -7,6 +7,8 @@ export const ActionTypes = {
     ON_EMPLOYEE_UPDATED: "on_employee_updated",
     ON_EMPLOYEE_FIRED: "on_employee_fired",
     ON_EMPLOYEES_RETRIEVED: "on_employees_retrieved",
+    ON_ROW_CLICKED: "on_row_clicked",
+    ON_EMPLOYEE_FIRED_ON_ROW: "on_row_clicked_on_ROW",
     ON_ERROR: "on_error"
 }
 export default function HrReducer(state, action) {
@@ -27,6 +29,13 @@ export default function HrReducer(state, action) {
         case ActionTypes.ON_EMPLOYEE_FIRED:
             employee = action.value;
             return {...state, employee};
+        case ActionTypes.ON_EMPLOYEE_FIRED_ON_ROW:
+            employee = action.value;
+            let emps = state.employees.filter( emp => emp.identityNo !== employee.identityNo);
+            return {...state, employee, employees: emps};
+        case ActionTypes.ON_ROW_CLICKED:
+            employee = action.value;
+            return {...state, employee};
         case ActionTypes.ON_EMPLOYEES_RETRIEVED:
             let employees = action.value;
             return {...state, employees};
@@ -38,6 +47,8 @@ export default function HrReducer(state, action) {
             break;
         case ActionTypes.ON_ERROR:
             break;
+        default:
+            throw new Error(`Unknown action type: ${action.type}`);
     }
 
     return {...state}; // shallow

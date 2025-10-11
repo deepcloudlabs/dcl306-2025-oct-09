@@ -1,6 +1,11 @@
-import React from "react";
+import React, {useMemo} from "react";
 
 export default function SelectBox({id,value,label,change,options}) {
+    const options_view = useMemo(()=>
+        options.map(option =>
+            (<option key={option}>{option}</option>)
+        ),[options]
+    );
     return(
         <div className="mb-3">
             <label className={"form-label"}
@@ -11,9 +16,7 @@ export default function SelectBox({id,value,label,change,options}) {
                     value={value}
                     onChange={change}>
                 {
-                    options.map(option =>
-                        (<option key={option}>{option}</option>)
-                    )
+                    options_view
                 }
             </select>
         </div>
