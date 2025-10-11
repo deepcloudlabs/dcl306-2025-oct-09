@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="application/javascript">
+        const my_elma_event = new CustomEvent('elma', {
+            detail: {
+                name: 'jack bauer',
+                age: 56
+            },
+            bubbles: true,
+            cancelable: true,
+            composed: false,
+        });
+        let counter1 = 0;
+        let counter2 = 0;
+        let counter3 = 0;
+        window.onload = function() {
+            document.querySelector("#btn1")
+                .addEventListener("click", function(e) {
+                    counter1++;
+                    this.innerText = `Click Me: ${counter1}`;
+                });
+            document.querySelector("#btn2")
+                .addEventListener("elma", function(e) {
+                    counter2++;
+                    this.innerText = `Click Me: ${counter2}`;
+                });
+            document.querySelector("#btn3")
+                .addEventListener("click", function(e) {
+                    counter3++;
+                    this.innerText = `Click Me: ${counter3}`;
+                });
+            setInterval(function() {
+                document.querySelector("#btn2").dispatchEvent(my_elma_event);
+            }, 1);
+            setInterval(function() {
+                document.querySelector("#btn3").dispatchEvent(new Event("click"));
+            }, 1);
+            setInterval(function() {
+                document.querySelector("#btn1").click();
+            }, 10)
+        }
+    </script>
+</head>
+<body>
+<button id="btn1">Click Me: 0</button>
+<button id="btn2">Click Me: 0</button>
+<button id="btn3">Click Me: 0</button>
+</body>
+</html>

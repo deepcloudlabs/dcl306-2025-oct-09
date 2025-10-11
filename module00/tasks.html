@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+    <script type="text/javascript">
+        console.log("1. Start");
+        setTimeout(function(){
+            console.log("5/6. setTimeout(): timer queue");
+        },0);
+        /* Nodejs
+        setImmediate(()=>{
+            console.log("5/6. setImmediate: timer queue");
+        })
+        */
+
+        Promise.resolve().then(() =>{
+            console.log("4. Microtask")
+        });
+        /* Nodejs
+        process.nextTick(()=>{
+            console.log("3. process.nextTick()");
+        })
+         */
+        console.log("2. End");
+    </script>
+</head>
+<body>
+
+</body>
+</html>
