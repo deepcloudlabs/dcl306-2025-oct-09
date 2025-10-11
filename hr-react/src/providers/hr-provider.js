@@ -16,7 +16,7 @@ export function useHr() {
     return {hr, hrDispatcher};
 }
 
-function useHrDispatcher() {
+export function useHrDispatcher() {
     const {hrDispatcher} = useContext(HrContext);
     return hrDispatcher;
 }

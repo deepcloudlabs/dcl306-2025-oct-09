@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function InputText({label,form_id,handleChange,value,placeholder}) {
+export default function InputText({label,form_id,onChange,value,placeholder}) {
     return (
         <div className="mb3">
             <label className={"form-label"}
@@ -9,7 +9,7 @@ export default function InputText({label,form_id,handleChange,value,placeholder}
                    type="text"
                    name={form_id}
                    id={form_id}
-                   onChange={handleChange}
+                   onChange={onChange}
                    value={value}
                    placeholder={placeholder}/>
         </div>

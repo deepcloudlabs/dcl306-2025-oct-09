@@ -1,17 +1,18 @@
 import React from "react";
 
-export default function SelectBox({value,change,options}) {
+export default function SelectBox({id,value,label,change,options}) {
     return(
         <div className="mb-3">
             <label className={"form-label"}
-                   htmlFor={"department"}>Department:</label>
-            <select id="department"
+                   htmlFor={id}>{label}:</label>
+            <select id={id}
+                    name={id}
                     className={"form-control form-select"}
                     value={value}
                     onChange={change}>
                 {
                     options.map(option =>
-                        (<option>{option}</option>)
+                        (<option key={option}>{option}</option>)
                     )
                 }
             </select>
