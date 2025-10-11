@@ -43,9 +43,10 @@ ws.on("message", data => {
         "symbol": frame.s,
         "price": frame.p,
         "quantity": frame.q,
-        "timestamp": frame.E
+        "timestamp": frame.E,
+        "sequence": frame.t
     } ;
-    //console.log(model);
+    console.log(model);
     let trade = new Trade(model);
     trade.save().then(()=>{
         //console.log("trade event is saved")
