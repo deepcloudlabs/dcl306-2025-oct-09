@@ -72,8 +72,8 @@ const employeeSchema = new mongoose.Schema({
     },
     "department": {
         type: String,
-        enum: ["IT", "Sales", "Finance", "HR"],
-        default: "Sales"
+        enum: ["IT", "SALES", "FINANCE", "HR"],
+        default: "SALES"
     }
 });
 
