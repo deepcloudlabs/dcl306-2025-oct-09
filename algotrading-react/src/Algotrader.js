@@ -5,6 +5,11 @@ import {useCallback, useEffect, useMemo, useState, useTransition} from "react";
 import Button from "./components/common/button";
 import io from "socket.io-client";
 import Table from "./components/common/table";
+import {Line} from "react-chartjs-2";
+import {chartOptions, initialChartData} from "./chart-utils";
+import {CategoryScale, Chart as ChartJS, LinearScale, LineElement, PointElement, Title, Tooltip} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip);
 
 // {symbol: "BTCUSDT", price: "112278.29000000", quantity: "0.00016000", timestamp: 1760184367509}
 function Algotrader() {
@@ -14,7 +19,7 @@ function Algotrader() {
     const [trades, setTrades] = useState([]);
     const [isMonitoring, setMonitoring] = useState(false);
     const [windowSize, setWindowSize] = useState(10);
-
+    const [chartData, setChartData] = useState(initialChartData);
     const socket = useMemo(() => {
         return io("ws://127.0.0.1:5555");
     }, []);
@@ -36,7 +41,7 @@ function Algotrader() {
                 let nextTrades = [...prevTrades, {
                     price: Number(trade.price),
                     quantity: Number(trade.quantity),
-                    volume: Number(trade.price * trade.quantity),
+                    volume: trade.volume,
                     timestamp: new Date(trade.timestamp).toString(),
                     sequence: trade.sequence
                 }];
@@ -44,6 +49,19 @@ function Algotrader() {
                     nextTrades.splice(0, nextTrades.length - windowSize);
                 }
                 return nextTrades;
+            });
+            setChartData(prevChartData => {
+                const nextChartData = {...prevChartData};
+                nextChartData.labels = [...prevChartData.labels, trade.sequence];
+                if (nextChartData.labels.length > windowSize) {
+                    nextChartData.labels.splice(0, nextChartData.labels.length - windowSize);
+                }
+                nextChartData.datasets= [...prevChartData.datasets];
+                nextChartData.datasets[0].data = [...prevChartData.datasets[0].data, Number(trade.volume)];
+                if (nextChartData.datasets[0].data.length > windowSize) {
+                    nextChartData.datasets[0].data.splice(0, nextChartData.datasets[0].data.length - windowSize);
+                }
+                return nextChartData;
             });
         });
         return () => {
@@ -112,14 +130,18 @@ function Algotrader() {
                 {monitoringButton}
             </Card>
             <p></p>
+            <Card title={"Market Chart"}>
+                <Line data={chartData}
+                      width={1080}
+                      height={720}
+                      options={chartOptions}/>
+            </Card>
+            <p></p>
             <Card title={"Trades Data"}>
                 <Table fields={["sequence", "price", "quantity", "volume", "timestamp"]}
                        items={trades}
+                       keyField={"sequence"}
                        column_names={["Sequence", "Price", "Quantity", "Volume", "Timestamp"]}/>
-            </Card>
-            <p></p>
-            <Card title={"Market Chart"}>
-
             </Card>
         </Container>
     );

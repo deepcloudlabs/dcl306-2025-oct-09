@@ -39,14 +39,17 @@ io.on('connection', (socket)=> {
 
 ws.on("message", data => {
     let frame= JSON.parse(data);
+    let volume = Number(frame.p)*Number(frame.q);
+    volume = volume.toFixed(4);
     let model = {
         "symbol": frame.s,
         "price": frame.p,
+        volume,
         "quantity": frame.q,
         "timestamp": frame.E,
         "sequence": frame.t
     } ;
-    console.log(model);
+    //console.log(model);
     let trade = new Trade(model);
     trade.save().then(()=>{
         //console.log("trade event is saved")
